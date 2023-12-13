@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Number Generator</title>
+<script>
+// 当网页加载完成后，运行此函数
+window.onload = function() {
+  // 获取今天的日期，并格式化为 YYYYMMDD 的格式
+  var today = new Date();
+  var dateKey = "" + today.getFullYear() + (today.getMonth()+1).toString().padStart(2, '0') + today.getDate().toString().padStart(2, '0');
+
+  // 尝试从本地存储中获取当前日期的计数器
+  var count = localStorage.getItem(dateKey);
+
+  // 如果计数器不存在或者日期已经改变，重置计数器为 1
+  if (count === null) {
+    count = 1;
+    localStorage.setItem(dateKey, count);
+  } else {
+    // 如果计数器存在，将其转换为数字并递增
+    count = parseInt(count) + 1;
+    localStorage.setItem(dateKey, count);
+  }
+
+  // 显示号码
+  document.getElementById("number").textContent = "Today's number: " + count.toString().padStart(3, '0');
+};
+
+// 添加一个函数来导出数据到 CSV 文件
+function exportToCSV() {
+  var today = new Date();
+  var dateKey = "" + today.getFullYear() + (today.getMonth()+1).toString().padStart(2, '0') + today.getDate().toString().padStart(2, '0');
+  var count = localStorage.getItem(dateKey);
+  var csvContent = "data:text/csv;charset=utf-8,";
+  csvContent += "Date,Number\n" + dateKey + "," + count + "\n";
+
+  var encodedUri = encodeURI(csvContent);
+  var link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "daily_number.csv");
+  document.body.appendChild(link); // Required for FF
+
+  link.click(); // This will download the data file named "daily_number.csv".
+}
+</script>
+</head>
+<body>
+<h1>Welcome to the Daily Number Generator</h1>
+<p id="number">Loading...</p>
+<button onclick="exportToCSV()">Export to CSV</button>
+</body>
+</html>
